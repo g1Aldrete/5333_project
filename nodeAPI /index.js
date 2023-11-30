@@ -335,21 +335,22 @@ app.get('/project/tasks/:Pnumber', (req, res, next) => {
     });
 });
 
-//10. A. 
+//10.
 //Add task (input: task name, task deadline; output: confirmation message)
 //Added User SSN as required input as it is can't be NULL currently
 //Added Tstatus as it is NOT NULL in the schema
+//Added PnO as it is a FK in the schema
 app.post('/newTask', (req, res, next) => {
-    const { Tname, Deadline, Tssn , Tstatus} = req.body;
+    const { Tname, Deadline, Tssn , Tstatus, Pno} = req.body;
 
     // Validate required fields
-    if (!Tname || !Deadline || !Tssn || !Tstatus ) {
-        res.status(400).send('Task name, task deadline, and user SSN are required');
+    if (!Tname || !Deadline || !Tssn || !Tstatus || !Pno) {
+        res.status(400).send('Task name, task deadline, user SSN, Task status, and Project Number are required');
         return;
     }
     // Insert the new task
-    let sql = "INSERT INTO TASK (Tname, Deadline, Tssn, Tstatus) VALUES (?, ?, ?)";
-    conn.query(sql, [Tname, Deadline, Tssn, Tstatus], (err, result) => {
+    let sql = "INSERT INTO TASK (Tname, Deadline, Tssn, Tstatus, Pno) VALUES (?, ?, ?)";
+    conn.query(sql, [Tname, Deadline, Tssn, Tstatus, Pno], (err, result) => {
         if (err) {
             return next(err);
         } else {
