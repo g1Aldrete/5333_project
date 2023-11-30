@@ -82,6 +82,28 @@ app.post('/newEmployee', (req,res)=>{
         }
     });  
 });
+
+//Add task (input: task name, task deadline; output: confirmation message)
+//Added User SSN as required input as it is can't be NULL currently
+app.post('/newTask', (req, res) => {
+    const { Tname, Deadline, Tssn } = req.body;
+
+    // Validate required fields
+    if (!Tname || !Deadline || !Tssn) {
+        res.status(400).send('Task name, task deadline, and user SSN are required');
+        return;
+    }
+    // Insert the new task
+    let sql = "INSERT INTO TASK (Tname, Deadline, Tssn) VALUES (?, ?, ?)";
+    conn.query(sql, [Tname, Deadline, Tssn], (err, result) => {
+        if (err) {
+            throw err;
+        } else {
+            res.send('New task added successfully.');
+        }
+    });
+});
+
 //Put new project in the data base
 app.post('/newProject', (req,res)=>{
     const data = req.body;
@@ -151,6 +173,104 @@ app.put('/profile/:Ssn',(req,res)=>{
         }
     });  
 });
+
+//Get users working on project (input: project id; output: emails of all users on that project)
+app.get('/project/users/:Pnumber', (req, res) => {
+    let projectID = req.params.Pnumber;
+    if (!projectID) {
+        res.status(400).send('Project ID is required');
+        return;
+    }
+    let sql = "SELECT E.email FROM EMPLOYEE AS E, WORKS_ON AS W " +
+              "WHERE E.Ssn = W.Essn AND W.Pno = ?";
+    conn.query(sql, [projectID], (err, result) => {
+        if (err) {
+            return next(err);
+        } else {
+            res.send(result);
+        }
+    });
+});
+
+//Add user to project (input: project id, user email; output: confirmation message)
+app.post('/project/addUser', (req, res) => {
+    const { Pnumber, userEmail } = req.body;
+    if (!Pnumber || !userEmail) {
+        res.status(400).send('Project ID and user email are required');
+        return;
+    }
+
+    // Fetch the user's name for the confirmation message
+    let fetchUserNameSQL = "SELECT Fname, Lname FROM EMPLOYEE WHERE email = ?";
+    conn.query(fetchUserNameSQL, [userEmail], (err, userNameResult) => {
+        if (err) {
+            return next(err);
+        }
+
+        // Insert the user into the project
+        let addUserToProjectSQL = "INSERT INTO WORKS_ON (Essn, Pno) " +
+            "SELECT Ssn, ? FROM EMPLOYEE WHERE email = ?";
+        conn.query(addUserToProjectSQL, [Pnumber, userEmail], (err, result) => {
+            if (err) {
+                return next(err);
+            } else {
+                // Send confirmation message with the user's name
+                const userName = `${userNameResult[0].Fname} ${userNameResult[0].Lname}`;
+                res.send(`User ${userName} added to project.`);
+            }
+        });
+    });
+});
+
+//Remove user from project (input: project id, user email; output: confirmation message)
+app.delete('/project/removeUser', (req, res) => {
+    const { Pnumber, userEmail } = req.body;
+    if (!Pnumber || !userEmail) {
+        res.status(400).send('Project ID and user email are required');
+        return;
+    }
+
+    // Fetch the user's name for the confirmation message
+    let fetchUserNameSQL = "SELECT Fname, Lname FROM EMPLOYEE WHERE email = ?";
+    conn.query(fetchUserNameSQL, [userEmail], (err, userNameResult) => {
+        if (err) {
+            return next(err);
+        }
+
+        // Delete the user from the project
+        let removeUserFromProjectSQL = "DELETE FROM WORKS_ON WHERE Pno = ? AND Essn IN (SELECT Ssn FROM EMPLOYEE WHERE email = ?)";
+        conn.query(removeUserFromProjectSQL, [Pnumber, userEmail], (err, result) => {
+            if (err) {
+                return next(err);
+            } else {
+                // Send confirmation message with the user's name
+                const userName = `${userNameResult[0].Fname} ${userNameResult[0].Lname}`;
+                res.send(`User ${userName} removed from project.`);
+            }
+        });
+    });
+});
+
+//Get tasks from project id (input: project id; output: list of all task ids, names, deadlines, and states):
+app.get('/project/tasks/:Pnumber', (req, res) => {
+    let projectID = req.params.Pnumber;
+    if (!projectID) {
+        res.status(400).send('Project ID is required');
+        return;
+    }
+
+    let sql = "SELECT Tnumber, Tname, Deadline, Tstatus FROM TASK WHERE Pno = ?";
+    conn.query(sql, [projectID], (err, result) => {
+        if (err) {
+            return next(err);
+        } else {
+            res.send(result);
+        }
+    });
+});
+
+
+
 
 app.delete('/profile/:Ssn',(req,res)=>{
     //delete the information of an employee from employee table
