@@ -1,0 +1,19 @@
+-- insert values for table PROJECT
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('ProductX', 1, 'Bellaire','2023-11-01', 5);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('ProductY', 2, 'Sugarland','2022-10-01', 5);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('ProductZ', 3, 'Houston','2021-12-11', 5);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('Computerization', 10, 'Stafford','2022-02-01', 4);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('Reorganization', 20, 'Houston','2022-05-01', 1);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('Newbenefits', 30, 'Stafford','2023-07-01', 4);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('OperatingSystem', 61, 'Sacramento','2023-10-19', 6);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('DatabaseSystems', 62, 'Atlanta','2021-09-01', 6);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('Middleware', 63, 'Atlanta','2022-03-01', 6);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('Advertizing', 70, 'Arlington','2023-06-01', 9);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('InkjetPrinters', 91, 'Milwaukee','2022-05-01', 7);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('LaserPrinters', 92, 'Milwaukee','2021-12-01', 7);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('Human1', 95, 'Arlington','2022-03-01', 9);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('SearchEngine', 22, 'Arlington','2023-08-01', 6);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('MotherBoard', 29, 'Milwaukee','2021-11-01', 7);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('EntityAnnot', 4, 'Houston','2022-12-08', 5);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('ConfigMgmt', 11, 'Atlanta','2023-11-01', 6);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Pstart_date, Dnum) VALUES ('DataMining', 13, 'Sacramento','2023-02-01', 6);
