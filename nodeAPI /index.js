@@ -357,7 +357,46 @@ app.post('/newTask', (req, res) => {
     });
 });
 
-//Deletion Routes
+// 11. Remove task (input: task id; output: confirmation message)
+app.delete('/task/:Tnumber', (req, res) => {
+    let taskNumber = req.params.Tnumber;
+    if (!taskNumber) {
+        res.status(400).send('Task ID is required');
+        return;
+    }
+
+    let sql = "DELETE FROM TASK WHERE Tnumber = ?";
+    conn.query(sql, [taskNumber], (err, result) => {
+        if (err) {
+            return next(err);
+        } else {
+            res.send('Task deleted successfully.');
+        }
+    });
+});
+
+// 12. Set task state (input: task id, task state; output: confirmation message)
+app.put('/task/state/:Tnumber', (req, res) => {
+    const taskNumber = req.params.Tnumber;
+    const { Tstatus } = req.body;
+
+    if (!taskNumber || !Tstatus) {
+        res.status(400).send('Task ID and task status are required');
+        return;
+    }
+
+    let sql = "UPDATE TASK SET Tstatus = ? WHERE Tnumber = ?";
+    conn.query(sql, [Tstatus, taskNumber], (err, result) => {
+        if (err) {
+            return next(err);
+        } else {
+            res.send('Task state updated successfully.');
+        }
+    });
+});
+
+
+//Additional Deletion Routes
 
 app.delete('/profile/:Ssn',(req,res)=>{
     //delete the information of an employee from employee table
