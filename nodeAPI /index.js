@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(upload());
 
 //A. Select all the information from the Employee table
-app.get('/employees',(req,res)=>{ 
+app.get('/employees',(req, res, next) => { 
     let sql = "SELECT * FROM EMPLOYEE";
     conn.query(sql, (err,result)=>{
         if(err){
@@ -22,7 +22,7 @@ app.get('/employees',(req,res)=>{
 
 
 //B. Select all the information from the Project table
-app.get('/projects',(req,res)=>{ 
+app.get('/projects',(req, res, next) => { 
     let sql = "SELECT * FROM PROJECT";
     conn.query(sql, (err,result)=>{
         if(err){
@@ -35,7 +35,7 @@ app.get('/projects',(req,res)=>{
 
 //C. Get project number given project name
 //note: if info enter as url then req.params.xx
-app.post('/newProject/:Pname', (req,res)=>{
+app.post('/newProject/:Pname', (req, res, next) => {
     let projName= req.params.Pname;
     if (!projName) {
         res.status(400).send('Project name is required');
@@ -59,7 +59,7 @@ app.post('/newProject/:Pname', (req,res)=>{
 
 //D. Get Employee ID given first and last name 
 //note: if info enter as json object then req.body.xxx   
-app.post('/newProjectUser/', (req,res)=>{   
+app.post('/newProjectUser/', (req, res, next) => {   
     let UserFn = req.body.Fname;
     let UserLn = req.body.Lname;
 //    let sql = `SELECT Ssn FROM EMPLOYEE WHERE Fname = '${UserFn}' AND Lname = '${UserLn}'`; - less secure
@@ -78,7 +78,7 @@ app.post('/newProjectUser/', (req,res)=>{
 });
 
 //E. update Employee Table Informantion based on employee id
-app.put('/profile/:Ssn',(req,res)=>{
+app.put('/profile/:Ssn',(req, res, next) => {
     //console.log(req.params.Ssn);
     let employeeID = req.params.Ssn
     if (!employeeID) {
@@ -96,12 +96,12 @@ app.put('/profile/:Ssn',(req,res)=>{
     });  
 });
 
-//F. Placeholder for additional routes not yet requested
+//F. 
 
 //Clay's Requested Routes
 
 //1. Retrieve the information of an employee given ID
-app.get('/profile/:Ssn', (req, res) => {
+app.get('/profile/:Ssn', (req, res, next) => {
     // Receive employeeID in the request parameters
     let employeeID = req.params.Ssn;
     // Check if employeeID is provided
@@ -126,7 +126,7 @@ app.get('/profile/:Ssn', (req, res) => {
 
 /* ORIGINAL CODE SEGMENT:
 
-app.get('/projects/:Ssn', (req, res) => {
+app.get('/projects/:Ssn', (req, res, next) => {
     // Receive employerID in the request parameters
     let employeeID = req.params.Ssn;
     // Check if employeeID is provided
@@ -147,8 +147,8 @@ app.get('/projects/:Ssn', (req, res) => {
 });
 */
 
-//suggested change: app.get('/user/projects/:Ssn', (req, res) => {
-app.get('/projects/:Ssn', (req, res) => {
+//suggested change: app.get('/user/projects/:Ssn', (req, res, next) => {
+app.get('/projects/:Ssn', (req, res, next) => {
     let employeeID = req.params.Ssn;
     if (!employeeID) {
         res.status(400).send('User SSN is required');
@@ -172,7 +172,7 @@ app.get('/projects/:Ssn', (req, res) => {
 /* ORIGINAL CODE SEGMENT:
 
 //Put new employee in the data base
-app.post('/newEmployee', (req,res)=>{
+app.post('/newEmployee', (req, res, next) => {
     const data = req.body;
     let sql = "INSERT INTO EMPLOYEE SET ?" 
     conn.query(sql, data, (err,result)=>{
@@ -185,7 +185,7 @@ app.post('/newEmployee', (req,res)=>{
 });
 */
 
-app.post('/newEmployee', (req, res) => {
+app.post('/newEmployee', (req, res, next) => {
     const { Ssn, Fname, Minit, Lname, Bdate, Address, email, Cphone, Sex, Super_ssn, Dno } = req.body;
     if (!Ssn || !Fname || !Lname || !email || !Dno) {
         res.status(400).send('User ID, first name, last name, email, and department number are required');
@@ -206,7 +206,7 @@ app.post('/newEmployee', (req, res) => {
 /* ORIGINAL:
 */
 //Put new project in the data base
-app.post('/newProject', (req,res)=>{
+app.post('/newProject', (req, res, next) => {
     const data = req.body;
     let sql = "INSERT INTO PROJECT SET ?" 
     conn.query(sql, data, (err,result)=>{
@@ -223,7 +223,7 @@ PLACEHOLDER FOR CODE
 */
 
 // 5. Delete project (input: project id; output: confirmation message)
-app.delete('/project/:Pnumber', (req, res) => {
+app.delete('/project/:Pnumber', (req, res, next) => {
     let projectID = req.params.Pnumber;
     if (!projectID) {
         res.status(400).send('Project ID is required');
@@ -241,7 +241,7 @@ app.delete('/project/:Pnumber', (req, res) => {
 });
 
 // 6. Get users working on project (input: project id; output: emails of all users on that project)
-app.get('/project/employees/:Pnumber', (req, res) => {
+app.get('/project/employees/:Pnumber', (req, res, next) => {
     let projectID = req.params.Pnumber;
     if (!projectID) {
         res.status(400).send('Project ID is required');
@@ -259,7 +259,7 @@ app.get('/project/employees/:Pnumber', (req, res) => {
 });
 
 // 7. Add user to project (input: project id, user email; output: confirmation message)
-app.post('/project/addEmployee', (req, res) => {
+app.post('/project/addEmployee', (req, res, next) => {
     const { Pnumber, empEmail } = req.body;
     if (!Pnumber || !empEmail) {
         res.status(400).send('Project ID and Employee email are required');
@@ -289,7 +289,7 @@ app.post('/project/addEmployee', (req, res) => {
 });
 
 //8. Remove user from project (input: project id, user email; output: confirmation message)
-app.delete('/project/removeEmp', (req, res) => {
+app.delete('/project/removeEmp', (req, res, next) => {
     const { Pnumber, empEmail } = req.body;
     if (!Pnumber || !empEmail) {
         res.status(400).send('Project ID and Employee email are required');
@@ -318,7 +318,7 @@ app.delete('/project/removeEmp', (req, res) => {
 });
 
 //9. Get tasks from project id (input: project id; output: list of all task ids, names, deadlines, and states):
-app.get('/project/tasks/:Pnumber', (req, res) => {
+app.get('/project/tasks/:Pnumber', (req, res, next) => {
     let projectID = req.params.Pnumber;
     if (!projectID) {
         res.status(400).send('Project ID is required');
@@ -338,7 +338,7 @@ app.get('/project/tasks/:Pnumber', (req, res) => {
 //10. A. 
 //Add task (input: task name, task deadline; output: confirmation message)
 //Added User SSN as required input as it is can't be NULL currently
-app.post('/newTask', (req, res) => {
+app.post('/newTask', (req, res, next) => {
     const { Tname, Deadline, Tssn } = req.body;
 
     // Validate required fields
@@ -358,7 +358,7 @@ app.post('/newTask', (req, res) => {
 });
 
 // 11. Remove task (input: task id; output: confirmation message)
-app.delete('/task/:Tnumber', (req, res) => {
+app.delete('/task/:Tnumber', (req, res, next) => {
     let taskNumber = req.params.Tnumber;
     if (!taskNumber) {
         res.status(400).send('Task ID is required');
@@ -376,7 +376,7 @@ app.delete('/task/:Tnumber', (req, res) => {
 });
 
 // 12. Set task state (input: task id, task state; output: confirmation message)
-app.put('/task/state/:Tnumber', (req, res) => {
+app.put('/task/state/:Tnumber', (req, res, next) => {
     const taskNumber = req.params.Tnumber;
     const { Tstatus } = req.body;
 
@@ -395,10 +395,9 @@ app.put('/task/state/:Tnumber', (req, res) => {
     });
 });
 
+//Deletion Routes
 
-//Additional Deletion Routes
-
-app.delete('/profile/:Ssn',(req,res)=>{
+app.delete('/profile/:Ssn',(req, res, next) => {
     //delete the information of an employee from employee table
     let employeeID = req.params.Ssn
     console.log(employeeID)
@@ -419,11 +418,11 @@ app.delete('/profile/:Ssn',(req,res)=>{
 
 //File Routes
 
-app.get('/file_upload',(req,res)=>{
+app.get('/file_upload',(req, res, next) => {
     res.sendFile(__dirname+'/index.html');
  });
 
-app.post('/file_upload',(req,res)=>{
+app.post('/file_upload',(req, res, next) => {
     if(req.files){
         let file = req.files.file;
         let filename = file.name;
