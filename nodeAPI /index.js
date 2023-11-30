@@ -205,7 +205,7 @@ app.post('/newEmployee', (req, res) => {
 // 4. Add new project (input: project name, project creator first name, project creator last name, project description; output: confirmation message)
 /* ORIGINAL:
 */
-Put new project in the data base
+//Put new project in the data base
 app.post('/newProject', (req,res)=>{
     const data = req.body;
     let sql = "INSERT INTO PROJECT SET ?" 
