@@ -1,0 +1,32 @@
+[
+{
+    "Address": "Fort Worth Texas", 
+     "email":"NEwmail@gmail.com", 
+     "Phone":"8172244567"
+},
+{
+    "Snn":"100000101", 
+    "Fname": "Diego", 
+    "Minit":"C", 
+    "Lname":"Lopez", 
+    "Bdate":"1988-03-28", 
+    "Address": "Amarillo Texas", 
+    "email":"diego@gmail.com", 
+    "Cphone":"8174444567",
+    "Sex":"M", 
+    "Super_ssn":"222222200", 
+    "Dno":6
+},
+{
+    "U_ID" :"000022200", 
+    "U_First":"Pedro", 
+    "U_Middle":"M", 
+    "U_Last":"May", 
+    "B_date":"1978-02-28", 
+    "U_gender":"M", 
+    "U_Bio":" ", 
+    "U_address": "Houston Texas", 
+    "U_email":"Pmy@gmail.com", 
+    "U_cell_phone":"8172234567"
+}
+]
