@@ -5,8 +5,8 @@
     tables for the Company Database.
 */
 
-CREATE SCHEMA IF NOT EXISTS Company1;
-USE Company1;
+CREATE SCHEMA IF NOT EXISTS Company;
+USE Company;
 
 -- create table for EMPLOYEE
 CREATE TABLE IF NOT EXISTS EMPLOYEE ( 

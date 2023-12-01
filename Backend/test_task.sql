@@ -1,0 +1,1 @@
+INSERT INTO TASK (Tname, Tstatus, Deadline, Pno, Tstart_date, Tssn) VALUES ('first task','start','2023-12-15', 1 ,'2023-11-23','999887777');

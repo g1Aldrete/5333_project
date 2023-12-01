@@ -30,7 +30,8 @@ app.get('/projects',(req,res)=>{
         }
     });
 });
-//retrieve the information of an employee given ID
+//#1 Get user info(input: userid=ssn)
+//output: user firstname last name and email
 app.get('/profile/:Ssn', (req, res) => {
     // Receive employeeID in the request parameters
     let employeeID = req.params.Ssn;
@@ -39,7 +40,7 @@ app.get('/profile/:Ssn', (req, res) => {
         res.status(400).send('Employee ID is required');
         return;
     }
-    let sql = `SELECT * FROM EMPLOYEE WHERE Ssn = '${employeeID}'`;
+    let sql = `SELECT Fname, Lname, email FROM EMPLOYEE WHERE Ssn = '${employeeID}'`;
     console.log(sql);
     conn.query(sql, (err, result) => {  
         if (err) {
@@ -49,7 +50,28 @@ app.get('/profile/:Ssn', (req, res) => {
         }
     });
 });
-//retrieve the PROJECTs information given an employee ID
+//#9 Get list of task from a project (input: projectID=Pno)
+//output: list of tasks, their name, number, status and deadline
+app.get('/tasklist/:Pno', (req, res) => {
+    // Receive projectID in the request parameters
+    let projectID = req.params.Pno;
+    // Check if projectID is provided
+    if (!projectID) {
+        res.status(400).send('Project ID is required');
+        return;
+    }
+    let sql = `SELECT Tnumber, Tname, Deadline, Tstatus FROM TASK WHERE Pno = ${projectID}`;
+    console.log(sql);
+    conn.query(sql, (err, result) => {  
+        if (err) {
+            throw err;
+        } else {
+            res.send(result);
+        }
+    });
+});
+//#2 Retrieve the PROJECTs information given(input:userid:ssn)
+//output: list of projects, and hrs worked
 app.get('/projects/:Ssn', (req, res) => {
     // Receive employerID in the request parameters
     let employeeID = req.params.Ssn;
@@ -58,7 +80,7 @@ app.get('/projects/:Ssn', (req, res) => {
         res.status(400).send(' employeeID is required');
         return;
     }
-    let sql = "SELECT Pname AS ProjectName, Hours AS hrsPerwk "+ 
+    let sql = "SELECT Fname AS OwnerName, Lname AS LastName, Pnumber AS ProjectID, Pname AS ProjectName, Hours AS hrsPerwk "+ 
     "FROM PROJECT AS P, EMPLOYEE AS E, WORKS_ON AS W " +
     `WHERE E.Ssn= W.Essn AND W.Pno = P.Pnumber AND E.Ssn = '${employeeID}'`;
     conn.query(sql, (err, result) => {  
@@ -69,45 +91,59 @@ app.get('/projects/:Ssn', (req, res) => {
         }
     });
 });
-
-//Put new employee in the data base
+//#6 retrieve the emails of all users working on a project information given(input:projectID:Pnumber)
+//output: the name of the individuals and their email number
+app.get('/Users/:Pnumber', (req, res) => {
+    // Receive projectID in the request parameters
+    let projectID = req.params.Pnumber;
+    // Check if employeeID is provided
+    if (!projectID) {
+        res.status(400).send(' projectID is required');
+        return;
+    }
+    let sql = "SELECT Fname AS Name, Lname AS LastName, email AS emailOfUser "+ 
+    "FROM PROJECT AS P, EMPLOYEE AS E, WORKS_ON AS W " +
+    `WHERE E.Ssn= W.Essn AND W.Pno = P.Pnumber AND P.Pnumber = '${projectID}'`;
+    conn.query(sql, (err, result) => {  
+        if (err) {
+            throw err;
+        } else {
+            res.send(result);
+        }
+    });
+});
+//#3 Put new employee in the data base
+//output: success
 app.post('/newEmployee', (req,res)=>{
     const data = req.body;
-    let sql = "INSERT INTO EMPLOYEE SET ?" 
+    let sql = "INSERT INTO EMPLOYEE SET ?"
     conn.query(sql, data, (err,result)=>{
         if(err){
             throw err;
         }else{
-            res.send(result);
+            //res.send(result);
+            res.send("new employee successully added")
         }
     });  
 });
-
-//Add task (input: task name, task deadline; output: confirmation message)
-//Added User SSN as required input as it is can't be NULL currently
-app.post('/newTask', (req, res) => {
-    const { Tname, Deadline, Tssn } = req.body;
-
-    // Validate required fields
-    if (!Tname || !Deadline || !Tssn) {
-        res.status(400).send('Task name, task deadline, and user SSN are required');
-        return;
-    }
-    // Insert the new task
-    let sql = "INSERT INTO TASK (Tname, Deadline, Tssn) VALUES (?, ?, ?)";
-    conn.query(sql, [Tname, Deadline, Tssn], (err, result) => {
-        if (err) {
-            throw err;
-        } else {
-            res.send('New task added successfully.');
-        }
-    });
-});
-
-//Put new project in the data base
+//#4 Put new project in the data base
+//output: success
 app.post('/newProject', (req,res)=>{
     const data = req.body;
     let sql = "INSERT INTO PROJECT SET ?" 
+    conn.query(sql, data, (err,result)=>{
+        if(err){
+            throw err;
+        }else{
+            //res.send(result);
+            res.send("new project successully added")
+        }
+    });  
+});
+//#10 Put new task in the data base
+app.post('/newTask', (req,res)=>{
+    const data = req.body;
+    let sql = "INSERT INTO TASK SET ?" 
     conn.query(sql, data, (err,result)=>{
         if(err){
             throw err;
@@ -139,7 +175,7 @@ app.post('/newProject/:Pname', (req,res)=>{
 });
 //Get Employee ID given first and last name 
 //note: if info enter as json object then req.body.xxx   
-app.post('/newProjectUser/', (req,res)=>{   
+app.post('/employeeID/', (req,res)=>{   
     let UserFn = req.body.Fname;
     let UserLn = req.body.Lname;
     let sql = `SELECT Ssn FROM EMPLOYEE WHERE Fname = '${UserFn}' AND Lname = '${UserLn}'`;
@@ -154,6 +190,13 @@ app.post('/newProjectUser/', (req,res)=>{
         }
     }); 
 });
+
+//#7 Add user to project (input: project id, user email)
+//output: success
+// NEEDS TO BE DONE
+//#8 Remove user from project (input: project id, 
+//user email; output: confirmation message
+//NEEDS TO BE DONE
 
 //update Employee Table Informantion based on employee id
 app.put('/profile/:Ssn',(req,res)=>{
@@ -173,107 +216,31 @@ app.put('/profile/:Ssn',(req,res)=>{
         }
     });  
 });
-
-//Get users working on project (input: project id; output: emails of all users on that project)
-app.get('/project/users/:Pnumber', (req, res) => {
-    let projectID = req.params.Pnumber;
+//#12 Set status on a task given a project number
+//input: task number and status
+//output: success
+app.put('/taskstatus/:Pno',(req,res)=>{
+    //console.log(req.params.Ssn);
+    //let  taskID= req.body.Tnumber;
+    let projectID = req.params.Pno;
+    //let status = req.body.Tstatus;
     if (!projectID) {
-        res.status(400).send('Project ID is required');
+        res.status(400).send('project for task to delete is required');
         return;
-    }
-    let sql = "SELECT E.email FROM EMPLOYEE AS E, WORKS_ON AS W " +
-              "WHERE E.Ssn = W.Essn AND W.Pno = ?";
-    conn.query(sql, [projectID], (err, result) => {
-        if (err) {
-            return next(err);
-        } else {
-            res.send(result);
+    }    
+    const data = [req.body.Tstatus, req.body.Tnumber, req.params.Pno];
+    let sql = `UPDATE TASK SET Tstatus = ? WHERE Tnumber = ? AND Pno = ${projectID}`;
+    conn.query(sql, data, (err,result)=>{
+        if(err){
+            throw err;
+        }else{
+            res.send("Status successfully changed");
         }
-    });
+    });  
 });
-
-//Add user to project (input: project id, user email; output: confirmation message)
-app.post('/project/addUser', (req, res) => {
-    const { Pnumber, userEmail } = req.body;
-    if (!Pnumber || !userEmail) {
-        res.status(400).send('Project ID and user email are required');
-        return;
-    }
-
-    // Fetch the user's name for the confirmation message
-    let fetchUserNameSQL = "SELECT Fname, Lname FROM EMPLOYEE WHERE email = ?";
-    conn.query(fetchUserNameSQL, [userEmail], (err, userNameResult) => {
-        if (err) {
-            return next(err);
-        }
-
-        // Insert the user into the project
-        let addUserToProjectSQL = "INSERT INTO WORKS_ON (Essn, Pno) " +
-            "SELECT Ssn, ? FROM EMPLOYEE WHERE email = ?";
-        conn.query(addUserToProjectSQL, [Pnumber, userEmail], (err, result) => {
-            if (err) {
-                return next(err);
-            } else {
-                // Send confirmation message with the user's name
-                const userName = `${userNameResult[0].Fname} ${userNameResult[0].Lname}`;
-                res.send(`User ${userName} added to project.`);
-            }
-        });
-    });
-});
-
-//Remove user from project (input: project id, user email; output: confirmation message)
-app.delete('/project/removeUser', (req, res) => {
-    const { Pnumber, userEmail } = req.body;
-    if (!Pnumber || !userEmail) {
-        res.status(400).send('Project ID and user email are required');
-        return;
-    }
-
-    // Fetch the user's name for the confirmation message
-    let fetchUserNameSQL = "SELECT Fname, Lname FROM EMPLOYEE WHERE email = ?";
-    conn.query(fetchUserNameSQL, [userEmail], (err, userNameResult) => {
-        if (err) {
-            return next(err);
-        }
-
-        // Delete the user from the project
-        let removeUserFromProjectSQL = "DELETE FROM WORKS_ON WHERE Pno = ? AND Essn IN (SELECT Ssn FROM EMPLOYEE WHERE email = ?)";
-        conn.query(removeUserFromProjectSQL, [Pnumber, userEmail], (err, result) => {
-            if (err) {
-                return next(err);
-            } else {
-                // Send confirmation message with the user's name
-                const userName = `${userNameResult[0].Fname} ${userNameResult[0].Lname}`;
-                res.send(`User ${userName} removed from project.`);
-            }
-        });
-    });
-});
-
-//Get tasks from project id (input: project id; output: list of all task ids, names, deadlines, and states):
-app.get('/project/tasks/:Pnumber', (req, res) => {
-    let projectID = req.params.Pnumber;
-    if (!projectID) {
-        res.status(400).send('Project ID is required');
-        return;
-    }
-
-    let sql = "SELECT Tnumber, Tname, Deadline, Tstatus FROM TASK WHERE Pno = ?";
-    conn.query(sql, [projectID], (err, result) => {
-        if (err) {
-            return next(err);
-        } else {
-            res.send(result);
-        }
-    });
-});
-
-
-
-
+//delete an employee input:ssn
+//output: success 
 app.delete('/profile/:Ssn',(req,res)=>{
-    //delete the information of an employee from employee table
     let employeeID = req.params.Ssn
     console.log(employeeID)
     if (!employeeID) {
@@ -287,6 +254,48 @@ app.delete('/profile/:Ssn',(req,res)=>{
             throw err;
         }else{
             res.send(result);
+        }
+    });  
+});
+//#5 Delete a project input:project id
+//output:confirmation of deletion
+app.delete('/project/:Pnumber',(req,res)=>{
+    let projectID = req.params.Pnumber
+    console.log(projectID)
+    if (!projectID) {
+        res.status(400).send('Project number/Id is required');
+        return;
+    }
+    let sql = `DELETE from PROJECT WHERE Pnumber = '${projectID}'`;
+    conn.query(sql, (err,result)=>{
+        if(err){
+            res.send('You have the following error')
+            throw err;
+        }else{
+            //res.send(result);
+            res.send(`project has been deleted`);
+        }
+    });  
+});
+//#11 Delete a task (input:project id and task id)
+//output:confirmation of deletion
+app.delete('/deletetask/',(req,res)=>{
+    //let taskID = req.params.Tnumber
+    let  taskID= req.body.Tnumber;
+    let projectID = req.body.Pno;
+    console.log(projectID)
+    if (!projectID || !taskID) {
+        res.status(400).send('Project and task number/Id is required');
+        return;
+    }
+    let sql = `DELETE from TASK WHERE Pno= '${projectID}' AND Tnumber ='${taskID}'`;
+    conn.query(sql, (err,result)=>{
+        if(err){
+            res.send('You have the following error')
+            throw err;
+        }else{
+            //res.send(result);
+            res.send(`the task has been deleted`);
         }
     });  
 });
@@ -309,4 +318,5 @@ app.post('/file_upload',(req,res)=>{
         });
     };
  });
+
 app.listen(4000);
